@@ -34,9 +34,9 @@ jobs:
 
       - name: Deploy to Shared Hosting using FTP
         env:
-          FTP_USERNAME: ${{ secrets.WEB_FTP_USERNAME }}
-          FTP_PASSWORD: ${{ secrets.WEB_FTP_PASSWORD }}
-          FTP_HOST: ${{ secrets.WEB_FTP_HOST }}
+          FTP_USERNAME: ${{ secrets.STAGE_FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.STAGE_FTP_PASSWORD }}
+          FTP_HOST: ${{ secrets.STAGE_FTP_HOST }}
         run: |
           cd dist # Adjust this if your build output directory is different
           lftp -c "set ssl:verify-certificate no; open -u $FTP_USERNAME,$FTP_PASSWORD $FTP_HOST; mirror -R -e -x .git/ ./"
@@ -68,9 +68,9 @@ jobs:
 
       - name: Deploy to Shared Hosting using FTP
         env:
-          FTP_USERNAME: ${{ secrets.DEV_FTP_USERNAME }}
-          FTP_PASSWORD: ${{ secrets.DEV_FTP_PASSWORD }}
-          FTP_HOST: ${{ secrets.DEV_FTP_HOST }}
+          FTP_USERNAME: ${{ secrets.PROD_FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.PROD_FTP_PASSWORD }}
+          FTP_HOST: ${{ secrets.PROD_FTP_HOST }}
         run: |
           cd dist # Adjust this if your build output directory is different
           lftp -c "set ssl:verify-certificate no; open -u $FTP_USERNAME,$FTP_PASSWORD $FTP_HOST; mirror -R -e -x .git/ ./"
