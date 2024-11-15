@@ -72,7 +72,7 @@ jobs:
           FTP_PASSWORD: ${{ secrets.DEV_FTP_PASSWORD }}
           FTP_HOST: ${{ secrets.DEV_FTP_HOST }}
         run: |
-          cd build # Adjust this if your build output directory is different
+          cd dist # Adjust this if your build output directory is different
           lftp -c "set ssl:verify-certificate no; open -u $FTP_USERNAME,$FTP_PASSWORD $FTP_HOST; mirror -R -e -x .git/ ./"
 
       - name: Clean up
