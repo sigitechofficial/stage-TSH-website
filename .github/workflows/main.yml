@@ -1,0 +1,79 @@
+name: Deploy to Shared Hosting
+
+on:
+  push:
+    branches:
+      - test
+  workflow_dispatch:
+    branches:
+      - main
+
+jobs:
+
+  deploy_test:
+    if: github.ref == 'refs/heads/test'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Install project dependencies
+        run: npm install
+
+      - name: Build React project
+        run: npm run build
+
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Deploy to Shared Hosting using FTP
+        env:
+          FTP_USERNAME: ${{ secrets.WEB_FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.WEB_FTP_PASSWORD }}
+          FTP_HOST: ${{ secrets.WEB_FTP_HOST }}
+        run: |
+          cd dist # Adjust this if your build output directory is different
+          lftp -c "set ssl:verify-certificate no; open -u $FTP_USERNAME,$FTP_PASSWORD $FTP_HOST; mirror -R -e -x .git/ ./"
+
+      - name: Clean up
+        run: echo "Clean up step"
+
+  deploy_main:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Install project dependencies
+        run: npm install
+
+      - name: Build React project
+        run: npm run build
+
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Deploy to Shared Hosting using FTP
+        env:
+          FTP_USERNAME: ${{ secrets.DEV_FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.DEV_FTP_PASSWORD }}
+          FTP_HOST: ${{ secrets.DEV_FTP_HOST }}
+        run: |
+          cd dist # Adjust this if your build output directory is different
+          lftp -c "set ssl:verify-certificate no; open -u $FTP_USERNAME,$FTP_PASSWORD $FTP_HOST; mirror -R -e -x .git/ ./"
+
+      - name: Clean up
+        run: echo "Clean up step"
